@@ -6,6 +6,7 @@ public class Link<T> implements LinkList<T>
 {
     public LinkNode<T> head;
     public LinkNode<T> tail;
+    private int size;
     private LinkNode<T> current;
 
     public Link()
@@ -29,6 +30,8 @@ public class Link<T> implements LinkList<T>
         add(collection);
     }
 
+    public int size() { return size; }
+    public boolean isEmpty() { return head == null; }
     public LinkNode<T> next()
     {
         return head.next;
@@ -70,6 +73,7 @@ public class Link<T> implements LinkList<T>
             current = current.next;
             tail = current;
         }
+        size++;
     }
     public void add(Collection<T> collection)
     {
@@ -92,17 +96,30 @@ public class Link<T> implements LinkList<T>
             previous = previous.next;
             current = current.next;
         }
+        size--;
         return current;
+    }
+    public LinkNode<T> removeHead()
+    {
+        LinkNode<T> originalHead = head;
+        head = head.next;
+        return originalHead;
     }
     public LinkNode<T> remove(T value) throws NoSuchElementException
     {
+        if(value.equals(tail.value))
+            remove();
+        else if(value.equals(head.value))
+            remove();
         boolean removed = false;
         LinkNode<T> previous = head;
         LinkNode<T> current = head.next;
+        LinkNode<T> removedNode = null;
         while(current != null)
         {
             if(current.value.equals(value))
             {
+                removedNode = current;
                 previous.next = current.next;
                 current = current.next;
                 if (current.next == null)
@@ -115,7 +132,8 @@ public class Link<T> implements LinkList<T>
         }
         if(!removed)
             throw new NoSuchElementException("\"" + value + "\"" + "was not found!");
-        return current;
+        size--;
+        return removedNode;
     }
     @Override
     public String toString()
