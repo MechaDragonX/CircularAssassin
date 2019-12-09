@@ -1,18 +1,18 @@
 package com.mechadragonx.adventureoflink;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
 
 public class DeathCircle
 {
     private Link<String> alive;
     private int round;
-    private TreeMap<String, Integer> dead;
+    private ArrayList<String> dead;
+    private boolean gameOver;
 
     public DeathCircle(ArrayList<String> people)
     {
         prepare(people);
-        dead = new TreeMap<>();
+        dead = new ArrayList<>();
         status();
     }
 
@@ -24,8 +24,14 @@ public class DeathCircle
     }
     public void status()
     {
-        System.out.println("===== Round " + round + " =====");
-        System.out.println("Remaining Players: " + alive.size());
+        if(alive.size() != 0)
+            System.out.println("===== Round " + round + " =====");
+        else
+            System.out.println("===== Final Status =====");
+        if(alive == null)
+            System.out.println("Remaining Players: " + 0 + "\n");
+        else
+            System.out.println("Remaining Players: " + alive.size());
         if(dead == null)
             System.out.println("Dead Players: " + 0 + "\n");
         else
@@ -37,9 +43,14 @@ public class DeathCircle
         LinkNode<String> current = alive.head;
         while(true)
         {
-            System.out.println(current.value);
-            current = current.next;
-            if(current == alive.head)
+            if(current != null)
+            {
+                System.out.println(current.value);
+                if(current.next == alive.head)
+                    break;
+                current = current.next;
+            }
+            else
                 break;
         }
         System.out.println();
@@ -47,31 +58,41 @@ public class DeathCircle
     public void graveyard()
     {
         System.out.println("===== Graveyard =====");
-        for(String name : dead.keySet())
+        for(int i = 0; i < dead.size(); i++)
         {
-            System.out.println(name + ": Died on Round " + dead.get(name));
+            System.out.println("Round " + (i + 1) + ": " + dead.get(i));
         }
         System.out.println();
     }
     public void kill(String name) throws NoSuchElementException
     {
+        if(gameOver)
+        {
+            System.out.println("The game is over!");
+            return;
+        }
+
         if(!alive.exists(name))
-            throw new NoSuchElementException("\"" + name + "\"" + "was not found!");
+            throw new NoSuchElementException("\"" + name + "\"" + " was not found! Remember you have to use the same case as the name the file!");
         if(name.equals(alive.tail.value))
-            dead.put(alive.remove().value, round);
+            dead.add(alive.remove().value);
         else if(name.equals(alive.head.value))
-            dead.put(alive.removeHead().value, round);
-        else dead.put(alive.remove(name).value, round);
-        if(!alive.isEmpty())
+        {
+            dead.add(alive.removeHead().value);
+            alive.tail.next = alive.head;
+        }
+        else
+            dead.add(alive.remove(name).value);
+        if(alive.size() != 1)
         {
             round++;
             alive.tail.next = alive.head;
+            System.out.println(name + " was successfully assassinated!");
         }
-        else if(alive.head.next.value.equals(alive.tail.value))
+        else
         {
-            round++;
-            System.out.println(alive.head.value + " is the last one standing! Congratulations " + alive.head.value + "!");
-            // System.exit(0);
+            System.out.println(alive.head.value + " is the last one standing! Congratulations " + alive.head.value + "!\n");
+            gameOver = true;
         }
     }
 }

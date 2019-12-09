@@ -55,6 +55,8 @@ public class Link<T> implements LinkList<T>
             if(current.value.equals(value))
                 return true;
             current = current.next;
+            if(current.equals(head))
+                break;
         }
         return false;
     }
@@ -103,6 +105,7 @@ public class Link<T> implements LinkList<T>
     {
         LinkNode<T> originalHead = head;
         head = head.next;
+        size--;
         return originalHead;
     }
     public LinkNode<T> remove(T value) throws NoSuchElementException

@@ -1,15 +1,18 @@
 package com.mechadragonx.adventureoflink;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class Main
 {
     public static void main(String[] args) throws Exception
     {
+        execute();
     }
     private static Path getPath() throws IOException
     {
@@ -30,26 +33,7 @@ public class Main
     }
     private static boolean isTextFile(Path path)
     {
-        String pathString = path.toString();
-        for(int i = pathString.length() - 1; i >= pathString.length() - 2; i--)
-        {
-            if(i == pathString.length() - 1)
-            {
-                if (pathString.charAt(i) != 't')
-                    return false;
-            }
-            else if(i == pathString.length() - 2)
-            {
-                if (pathString.charAt(i) != 'x')
-                    return false;
-            }
-            else if(i == pathString.length() - 3)
-            {
-                if (pathString.charAt(i) != 't')
-                    return false;
-            }
-        }
-        return true;
+        return path.toString().substring(path.toString().length() - 3).equals("txt");
     }
     private static ArrayList<String> readNames(Path path) throws Exception
     {
@@ -59,5 +43,65 @@ public class Main
         while((name = br.readLine()) != null)
             people.add(name);
         return people;
+    }
+    private static void execute() throws Exception
+    {
+        // DeathCircle circle = new DeathCircle(readNames(Paths.get("./data/names.txt")));
+        DeathCircle circle = new DeathCircle(readNames(getPath()));
+        InputStreamReader stream = new InputStreamReader(System.in);
+        BufferedReader buffer = new BufferedReader(stream);
+        System.out.println("Welcome to the Assassin game!");
+        System.out.println("Please type a command!");
+        commands();
+        String[] command;
+        while(true)
+        {
+            command = buffer.readLine().split("\\s");
+            if(command.length > 2)
+                System.out.println("The command is illegal!");
+            else
+            {
+                switch(command[0].toLowerCase())
+                {
+                    case "status":
+                        circle.status();
+                        break;
+                    case "alive":
+                        circle.alivePlayers();
+                        break;
+                    case "graveyard":
+                        circle.graveyard();
+                        break;
+                    case "kill":
+                        try
+                        {
+                            circle.kill(command[1]);
+                        }
+                        catch(NoSuchElementException e)
+                        {
+                            System.out.println(e.getMessage());
+                        }
+                        break;
+                    case "help":
+                        commands();
+                        break;
+                    case "exit":
+                        System.out.println("Thanks for playing!");
+                        return;
+                    default:
+                        System.out.println("The command is illegal!");
+                        break;
+                }
+            }
+        }
+    }
+    private static void commands()
+    {
+        System.out.println("\"status\": Lists the number of alive and dead players in the current round.");
+        System.out.println("\"alive\": List the names of people who are still alive.");
+        System.out.println("\"graveyard: Lists the names of people who are dead int eh order they died.");
+        System.out.println("\"kill <name>\": Kills the specified person.");
+        System.out.println("\"help\": Lists the commands");
+        System.out.println("\"exit\": Ends the applications");
     }
 }
