@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Main
 {
@@ -42,6 +43,7 @@ public class Main
         String name;
         while((name = br.readLine()) != null)
             people.add(name);
+        Collections.shuffle(people);
         return people;
     }
     private static void execute() throws Exception
